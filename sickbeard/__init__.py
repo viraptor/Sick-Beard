@@ -32,7 +32,7 @@ from sickbeard import providers, metadata
 from providers import ezrss, nzbs_org, nzbmatrix, tvbinz, nzbsrus, binreq, newznab, womble, newzbin
 
 from sickbeard import searchCurrent, searchBacklog, showUpdater, versionChecker, properFinder, autoPostProcesser
-from sickbeard import helpers, db, exceptions, show_queue, search_queue, scheduler
+from sickbeard import helpers, db, exceptions, show_queue, search_queue, scheduler, generic_queue
 from sickbeard import logger
 
 from sickbeard.common import *
@@ -517,6 +517,7 @@ def initialize(consoleLogging=True):
 
         # initialize the main SB database
         db.upgradeDatabase(db.DBConnection(), mainDB.InitialSchema)
+		  generic_queue.init_queue_threadpool(5)
 
         currentSearchScheduler = scheduler.Scheduler(searchCurrent.CurrentSearcher(),
                                                      cycleTime=datetime.timedelta(minutes=SEARCH_FREQUENCY),

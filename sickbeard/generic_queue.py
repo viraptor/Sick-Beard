@@ -18,14 +18,16 @@
 
 import operator
 import threading
+import Queue
+import traceback
 
 import sickbeard
 from sickbeard import logger
 
 class QueuePriorities:
-    LOW = 10
+    LOW = 30
     NORMAL = 20
-    HIGH = 30
+    HIGH = 10
 
 class GenericQueue(object):
 
@@ -113,4 +115,49 @@ class QueueItem:
 
         self.inProgress = False
 
+class GenericTaskQueue(object):
+    def __init__(self, number_of_workers):
+        self.main_queue = Queue.PriorityQueue()
+        self.queue_allow_running = threading.Event()
+        self.init_queue_threadpool(number_of_workers)
+        self.start_queue_workers()
+
+    def _worker_entry_point(self, id, queue):
+        while True:
+            self.queue_allow_running.wait(None)
+            if not queue_allow_running.is_set():
+                return
+                
+            try:
+                priority, item = self.queue.get(True, 2)
+                try:
+                    item.run()
+                except:
+                    logger.crit(traceback.format_exc())
+
+            except Queue.Empty:
+                # the queue was empty - nothing to schedule - just ignore
+                pass
+
+    def abort_queue_threadpool(self):
+        self.queue_allow_running.clear()
+
+    def init_queue_threadpool(self, number):
+        self.queue_allow_running.set()
+        self.queue_threadpool = [
+                threading.Thread(None, self._worker_entry_point, "Queue worker %i" % (id,), (id, self.main_queue))
+                for id in range(number)]
+
+    def start_queue_workers(self)
+        for thread in self.queue_threadpool:
+            thread.start()
+
+    def submit_task(self, item):
+        if not hasattr(item, run):
+            raise Exception("Submitted item is not runnable")
+
+        if isinstance(item, QueueItem):
+            self.main_queue.put((item.priority, item))
+        else:
+            self.main_queue.put((QueuePriorities.NORMAL, item))
 
