@@ -143,7 +143,7 @@ class GenericTaskQueue(object):
                 # the queue was empty - nothing to schedule - just ignore
                 pass
 
-    def abort_queue_threadpool(self):
+    def abort(self):
         self.queue_allow_running.clear()
 
     def init_queue_threadpool(self, number):
@@ -173,3 +173,8 @@ class GenericTaskQueue(object):
     def get_queue_iterator(self):
         for _prio, x in self.queue.queue:
             yield x
+
+    def join(self, timeout):
+        for th in self.queue_threadpool:
+            th.join(timeout)
+

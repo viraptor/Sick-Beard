@@ -541,10 +541,7 @@ def initialize(consoleLogging=True):
                                                      threadName="CHECKVERSION",
                                                      runImmediately=True)
 
-        showQueueScheduler = scheduler.Scheduler(show_queue.ShowQueue(),
-                                               cycleTime=datetime.timedelta(seconds=3),
-                                               threadName="SHOWQUEUE",
-                                               silent=True)
+        showQueueScheduler = show_queue.ShowQueue()
 
         searchQueueScheduler = scheduler.Scheduler(search_queue.SearchQueue(),
                                                cycleTime=datetime.timedelta(seconds=3),
@@ -590,9 +587,6 @@ def start():
 
             # start the version checker
             versionCheckScheduler.thread.start()
-
-            # start the queue checker
-            showQueueScheduler.thread.start()
 
             # start the search queue checker
             searchQueueScheduler.thread.start()
@@ -644,10 +638,10 @@ def halt ():
             except:
                 pass
 
-            showQueueScheduler.abort = True
+            showQueueScheduler.abort()
             logger.log(u"Waiting for the SHOWQUEUE thread to exit")
             try:
-                showQueueScheduler.thread.join(10)
+                showQueueScheduler.join(10)
             except:
                 pass
 
