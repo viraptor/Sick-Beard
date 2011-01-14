@@ -123,7 +123,10 @@ class GenericTaskQueue(object):
         self.start_queue_workers()
         self.current_items = [None for _ in range(number_of_workers)]
         
-        self.action = self # for generic queue compatibility
+    def _get_action(self):
+        return self
+
+    action = property(_get_action)
 
     def _worker_entry_point(self, id, queue):
         while True:
