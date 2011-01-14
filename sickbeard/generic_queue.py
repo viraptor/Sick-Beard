@@ -152,7 +152,7 @@ class GenericTaskQueue(object):
         for thread in self.queue_threadpool:
             thread.start()
 
-    def submit_task(self, item):
+    def add_item(self, item):
         if not hasattr(item, run):
             raise Exception("Submitted item is not runnable")
 
