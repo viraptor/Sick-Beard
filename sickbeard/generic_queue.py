@@ -154,7 +154,7 @@ class GenericTaskQueue(object):
                 threading.Thread(None, self._worker_entry_point, "Queue worker %i" % (id,), (id, self.queue))
                 for id in range(number)]
 
-    def start_queue_workers(self)
+    def start_queue_workers(self):
         for thread in self.queue_threadpool:
             thread.start()
 
