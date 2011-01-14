@@ -117,10 +117,11 @@ class QueueItem:
 
 class GenericTaskQueue(object):
     def __init__(self, number_of_workers):
-        self.main_queue = Queue.PriorityQueue()
+        self.queue = Queue.PriorityQueue()
         self.queue_allow_running = threading.Event()
         self.init_queue_threadpool(number_of_workers)
         self.start_queue_workers()
+        self.current_items = [None for _ in range(number_of_workers)]
 
     def _worker_entry_point(self, id, queue):
         while True:
@@ -131,9 +132,12 @@ class GenericTaskQueue(object):
             try:
                 priority, item = self.queue.get(True, 2)
                 try:
+                    self.current_items[id] = item
                     item.run()
                 except:
                     logger.crit(traceback.format_exc())
+
+                self.current_items[id] = None
 
             except Queue.Empty:
                 # the queue was empty - nothing to schedule - just ignore
@@ -145,7 +149,7 @@ class GenericTaskQueue(object):
     def init_queue_threadpool(self, number):
         self.queue_allow_running.set()
         self.queue_threadpool = [
-                threading.Thread(None, self._worker_entry_point, "Queue worker %i" % (id,), (id, self.main_queue))
+                threading.Thread(None, self._worker_entry_point, "Queue worker %i" % (id,), (id, self.queue))
                 for id in range(number)]
 
     def start_queue_workers(self)
@@ -157,7 +161,12 @@ class GenericTaskQueue(object):
             raise Exception("Submitted item is not runnable")
 
         if isinstance(item, QueueItem):
-            self.main_queue.put((item.priority, item))
+            self.queue.put((item.priority, item))
         else:
-            self.main_queue.put((QueuePriorities.NORMAL, item))
+            self.queue.put((QueuePriorities.NORMAL, item))
+
+    def get_current_queue(self):
+        """This way is not thread-safe at all - the result should be only informative"""
+
+        return self.queue.queue + self.current_items
 

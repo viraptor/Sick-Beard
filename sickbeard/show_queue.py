@@ -30,10 +30,10 @@ from sickbeard.tv import TVShow
 from sickbeard import exceptions, helpers, logger, ui
 from sickbeard import generic_queue
 
-class ShowQueue(generic_queue.GenericQueue):
+class ShowQueue(generic_queue.GenericTaskQueue):
 
     def __init__(self):
-        generic_queue.GenericQueue.__init__(self)
+        generic_queue.GenericTaskQueue.__init__(self)
         self.queue_name = "SHOWQUEUE"
 
 
@@ -66,7 +66,7 @@ class ShowQueue(generic_queue.GenericQueue):
         return self._isBeingSomethinged(show, (ShowQueueActions.RENAME,))
 
     def _getLoadingShowList(self):
-        return [x for x in self.queue+[self.currentItem] if x != None and x.isLoading]
+        return [x for _prio, x in self.get_current_queue() if x is not None and x.isLoading]
 
     loadingShowList = property(_getLoadingShowList)
 
