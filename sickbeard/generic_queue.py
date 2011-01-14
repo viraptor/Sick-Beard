@@ -122,6 +122,8 @@ class GenericTaskQueue(object):
         self.init_queue_threadpool(number_of_workers)
         self.start_queue_workers()
         self.current_items = [None for _ in range(number_of_workers)]
+        
+        self.action = self # for generic queue compatibility
 
     def _worker_entry_point(self, id, queue):
         while True:
@@ -168,7 +170,7 @@ class GenericTaskQueue(object):
     def get_current_queue(self):
         """This way is not thread-safe at all - the result should be only informative"""
 
-        return self.queue.queue + self.current_items
+        return self.current_items + self.queue.queue
 
     def get_queue_iterator(self):
         for _prio, x in self.queue.queue:
