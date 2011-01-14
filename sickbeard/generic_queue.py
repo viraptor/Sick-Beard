@@ -170,3 +170,6 @@ class GenericTaskQueue(object):
 
         return self.queue.queue + self.current_items
 
+    def get_queue_iterator(self):
+        for _prio, x in self.queue.queue:
+            yield x

@@ -36,9 +36,8 @@ class ShowQueue(generic_queue.GenericTaskQueue):
         generic_queue.GenericTaskQueue.__init__(self)
         self.queue_name = "SHOWQUEUE"
 
-
     def _isInQueue(self, show, actions):
-        return show in [x.show for x in self.queue if x.action_id in actions]
+        return show in (x.show for x in self.get_queue_iterator() if x.action_id in actions)
 
     def _isBeingSomethinged(self, show, actions):
         return self.currentItem != None and show == self.currentItem.show and \
@@ -86,7 +85,7 @@ class ShowQueue(generic_queue.GenericTaskQueue):
         else:
             queueItemObj = QueueItemForceUpdate(show)
 
-        self.queue.append(queueItemObj)
+        self.add_item(queueItemObj)
 
         return queueItemObj
 
@@ -101,7 +100,7 @@ class ShowQueue(generic_queue.GenericTaskQueue):
 
         queueItemObj = QueueItemRefresh(show)
         
-        self.queue.append(queueItemObj)
+        self.add_item(queueItemObj)
 
         return queueItemObj
 
@@ -109,13 +108,13 @@ class ShowQueue(generic_queue.GenericTaskQueue):
 
         queueItemObj = QueueItemRename(show)
 
-        self.queue.append(queueItemObj)
+        self.add_item(queueItemObj)
 
         return queueItemObj
 
     def addShow(self, tvdb_id, showDir):
         queueItemObj = QueueItemAdd(tvdb_id, showDir)
-        self.queue.append(queueItemObj)
+        self.add_item(queueItemObj)
 
         return queueItemObj
 
