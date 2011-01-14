@@ -69,7 +69,7 @@ class GenericQueue(object):
             if len(self.queue) > 0:
 
                 # sort by priority
-                self.queue.sort(key=operator.attrgetter('priority'), reverse=True)
+                self.queue.sort(key=operator.attrgetter('priority'))
                 
                 queueItem = self.queue[0]
 
