@@ -128,7 +128,7 @@ class GenericTaskQueue(object):
     def _worker_entry_point(self, id, queue):
         while True:
             self.queue_allow_running.wait(None)
-            if not queue_allow_running.is_set():
+            if not self.queue_allow_running.is_set():
                 return
                 
             try:

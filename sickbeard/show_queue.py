@@ -33,7 +33,7 @@ from sickbeard import generic_queue
 class ShowQueue(generic_queue.GenericTaskQueue):
 
     def __init__(self):
-        generic_queue.GenericTaskQueue.__init__(self)
+        generic_queue.GenericTaskQueue.__init__(self, 1)
         self.queue_name = "SHOWQUEUE"
 
     def _isInQueue(self, show, actions):
